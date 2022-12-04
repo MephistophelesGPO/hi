@@ -1,0 +1,52 @@
+local MenuId = 4111023553
+local CurrentPlace = game.PlaceId
+
+local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
+local TeleportService = game:GetService("TeleportService")
+
+local Start = game.ReplicatedStorage.Requests.StartMenu.Start
+
+local Player = game.Players.LocalPlayer
+
+local Proxy = {
+    GoalPlaceId = 0
+}
+local Data = setmetatable({}, {
+    __index = function(_, k)
+        return rawset(Proxy, k)
+    end,
+    __newindex = function(_, k, v)
+        rawset(Proxy, k, v)
+        writefile("assassinationfarm.json", HttpService:JSONEncode(Proxy))
+    end
+})
+
+local ReadData = readfile("assassinationfarm.json")
+if not ReadData then
+    writefile("assassinationfarm.json", HttpService:JSONEncode(Proxy))
+else
+    Proxy = HttpService:JSONDecode(ReadData)
+end
+
+local function Teleport(Goal)
+    if Goal ~= MenuId then
+        Player:Kick()
+        TeleportService:Teleport(Goal, Player)
+    else
+        Start:FireServer("A", {PrivateTest = false})
+        TeleportService:Teleport(Goal, Player)
+        Data.GoalPlaceId = 0
+    end
+end
+
+if Data.GoalPlaceId ~= 0 then
+    Teleport(Data.GoalPlaceId)
+end
+
+local function ServerHop()
+    Data.GoalPlaceId = CurrentPlace
+    Teleport(MenuId)
+end
+
+syn.queue_on_teleport("print('hi')")
