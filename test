@@ -5,7 +5,8 @@ local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
 local TeleportService = game:GetService("TeleportService")
 
-local Start = game.ReplicatedStorage.Requests.StartMenu.Start
+local Requests = game:GetService("ReplicatedStorage"):WaitForChild("Requests")
+local Start = Requests.StartMenu.Start
 
 local Player = game.Players.LocalPlayer
 
@@ -14,7 +15,7 @@ local Proxy = {
 }
 local Data = setmetatable({}, {
     __index = function(_, k)
-        return rawset(Proxy, k)
+        return rawget(Proxy, k)
     end,
     __newindex = function(_, k, v)
         rawset(Proxy, k, v)
@@ -22,11 +23,11 @@ local Data = setmetatable({}, {
     end
 })
 
-local ReadData = readfile("assassinationfarm.json")
-if not ReadData then
+local ReadData
+if not isfile("assassinationfarm.json") then
     writefile("assassinationfarm.json", HttpService:JSONEncode(Proxy))
 else
-    Proxy = HttpService:JSONDecode(ReadData)
+    Proxy = HttpService:JSONDecode(readfile("assassinationfarm.json"))
 end
 
 local function Teleport(Goal)
@@ -49,4 +50,6 @@ local function ServerHop()
     Teleport(MenuId)
 end
 
-syn.queue_on_teleport("print('hi')")
+syn.queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/MephistophelesGPO/hi/main/test'))()")
+
+ServerHop()
