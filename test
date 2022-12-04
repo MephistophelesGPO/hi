@@ -5,6 +5,7 @@ local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
 local TeleportService = game:GetService("TeleportService")
 
+print("new version")
 local Requests = game:GetService("ReplicatedStorage"):WaitForChild("Requests")
 local Start = Requests.StartMenu.Start
 
